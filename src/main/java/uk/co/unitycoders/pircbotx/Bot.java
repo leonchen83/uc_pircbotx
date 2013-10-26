@@ -66,7 +66,7 @@ public class Bot
 		// Listeners
 		manager.addListener(new CommandListener(processor));
 		manager.addListener(new LinesListener());
-		manager.addListener(JoinsListener.getInstance());
+		manager.addListener(JoinsListener.getInstance(true));
 
 		// Snapshot (1.8-SNAPSHOT) only
 		bot.setAutoReconnect(true);
@@ -74,7 +74,7 @@ public class Bot
 
 		try
 		{
-			bot.setName("uc_pircbotx");
+			bot.setName("uc_welcomebot");
 			bot.connect("chat.freenode.net", 6697, SSLSocketFactory.getDefault());
 			bot.joinChannel("#unity-coders");
 			bot.setVerbose(true);

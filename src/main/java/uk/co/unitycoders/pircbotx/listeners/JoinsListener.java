@@ -30,10 +30,12 @@ public class JoinsListener extends ListenerAdapter<PircBotX>
 {
 	private static JoinsListener instance;
 	private Map<User, Integer> joins;
+	private boolean welcome;
 
-	private JoinsListener()
+	private JoinsListener(boolean welcome)
 	{
 		this.joins = new TreeMap<User, Integer>();
+		this.welcome = welcome;
 	}
 
 	/**
@@ -41,10 +43,10 @@ public class JoinsListener extends ListenerAdapter<PircBotX>
 	 * 
 	 * @return the JoinsListener singleton
 	 */
-	public static JoinsListener getInstance()
+	public static JoinsListener getInstance(boolean welcome)
 	{
 		if (instance == null)
-			instance = new JoinsListener();
+			instance = new JoinsListener(welcome);
 
 		return instance;
 	}
@@ -56,6 +58,11 @@ public class JoinsListener extends ListenerAdapter<PircBotX>
 		if (joins == null)
 			joins = 0;
 		this.joins.put(event.getUser(), joins + 1);
+
+		if (this.welcome)
+		{
+			event.respond("Welcome");
+		}
 	}
 
 	/**

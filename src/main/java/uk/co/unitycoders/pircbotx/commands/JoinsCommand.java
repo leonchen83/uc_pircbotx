@@ -41,7 +41,7 @@ public class JoinsCommand
 	 */
 	public JoinsCommand()
 	{
-		this.joins = JoinsListener.getInstance().getJoins();
+		this.joins = JoinsListener.getInstance(true).getJoins();
 	}
 
 	@Command
