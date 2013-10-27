@@ -11,6 +11,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 
 import uk.co.unitycoders.pircbotx.commandprocessor.Command;
 import uk.co.unitycoders.pircbotx.commandprocessor.CommandProcessor;
+import uk.co.unitycoders.pircbotx.commandprocessor.Message;
 
 /**
  * Displays information on other commands.
@@ -33,12 +34,12 @@ public class HelpCommand {
     }
 
     @Command("commands")
-    public void onHelp(MessageEvent<PircBotX> event) {
+    public void onHelp(Message event) {
         String line = event.getMessage();
         String[] args = line.split(" ");
 
         if (args.length != 3) {
-            event.respond("usage: help [module]");
+            event.respond("usage: help commands [module]");
             return;
         }
 
@@ -49,7 +50,7 @@ public class HelpCommand {
             event.respond("Sorry, that module doesn't exist or has no commands");
         }
 
-        event.respond(args[1] + " contains: " + Arrays.toString(commands));
+        event.respond(args[2] + " contains: " + Arrays.toString(commands));
     }
 
 }

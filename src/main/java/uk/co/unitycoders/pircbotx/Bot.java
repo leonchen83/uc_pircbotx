@@ -39,72 +39,67 @@ import uk.co.unitycoders.pircbotx.profile.ProfileManager;
  * 
  * @author Bruce Cowan
  */
-public class Bot
-{
+public class Bot {
 
-	public static void main(String[] args) throws Exception
-	{
-		// Bot Configuration
-		Configuration config = ConfigurationManager.loadConfig();
+    public static void main(String[] args) throws Exception {
+        // Bot Configuration
+        Configuration config = ConfigurationManager.loadConfig();
 
-		CommandProcessor processor = new CommandProcessor(config.trigger);
+        CommandProcessor processor = new CommandProcessor(config.trigger);
 
-		ProfileManager profiles = new ProfileManager(DBConnection.getProfileModel());
-		DateTimeCommand dtCmd = new DateTimeCommand();
+        ProfileManager profiles = new ProfileManager(DBConnection.getProfileModel());
+        DateTimeCommand dtCmd = new DateTimeCommand();
 
-		// Dynamiclly load classes from configuration file (if available)
+        		// Dynamiclly load classes from configuration file (if available)
 		if (config.commands != null)
 		{
 			loadCommands(config.commands, processor);
 		}
+        
+        // Commands
+        processor.register("rand", new RandCommand());
+        processor.register("time", dtCmd);
+        processor.register("date", dtCmd);
+        processor.register("datetime", dtCmd);
+        processor.register("lart", new LartCommand());
+        processor.register("killertrout", new KillerTroutCommand());
+        processor.register("joins", new JoinsCommand());
+        processor.register("calc", new CalcCommand());
+        processor.register("karma", new KarmaCommand());
+        processor.register("profile", new ProfileCommand(profiles));
+        processor.register("help", new HelpCommand(processor));
+        processor.register("nick", new NickCommand());
 
-		// staticlly registered commands
-		processor.register("time", dtCmd);
-		processor.register("date", dtCmd);
-		processor.register("datetime", dtCmd);
-		processor.register("killertrout", new KillerTroutCommand());
-		processor.register("joins", new JoinsCommand());
-		processor.register("calc", new CalcCommand());
-		processor.register("karma", new KarmaCommand());
-		processor.register("profile", new ProfileCommand(profiles));
-		processor.register("help", new HelpCommand(processor));
+        PircBotX bot = new PircBotX();
+        ListenerManager<? extends PircBotX> manager = bot.getListenerManager();
 
-		PircBotX bot = new PircBotX();
-		ListenerManager<? extends PircBotX> manager = bot.getListenerManager();
+        // Listeners
+        manager.addListener(new CommandListener(processor));
+        manager.addListener(new LinesListener());
+        manager.addListener(JoinsListener.getInstance());
 
-		// Listeners
-		manager.addListener(new CommandListener(processor));
-		manager.addListener(new LinesListener());
-		manager.addListener(JoinsListener.getInstance());
+        // Snapshot (1.8-SNAPSHOT) only
+        bot.setAutoReconnect(true);
+        bot.setAutoReconnectChannels(true);
 
-		// Snapshot (1.8-SNAPSHOT) only
-		bot.setAutoReconnect(true);
-		bot.setAutoReconnectChannels(true);
+        try {
+            bot.setName(config.nick);
+            if (config.ssl) {
+                bot.connect(config.host, config.port, SSLSocketFactory.getDefault());
+            } else {
+                bot.connect(config.host, config.port);
+            }
 
-		try
-		{
-			bot.setName(config.nick);
-			if (config.ssl)
-			{
-				bot.connect(config.host, config.port, SSLSocketFactory.getDefault());
-			}
-			else
-			{
-				bot.connect(config.host, config.port);
-			}
-
-			for (String channel : config.channels)
-			{
-				bot.joinChannel(channel);
-			}
-			bot.setVerbose(true);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	private static void loadCommands(Map<String, String> c, CommandProcessor p) throws ClassNotFoundException, InstantiationException,
+            for (String channel : config.channels) {
+                bot.joinChannel(channel);
+            }
+            bot.setVerbose(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    	private static void loadCommands(Map<String, String> c, CommandProcessor p) throws ClassNotFoundException, InstantiationException,
 			IllegalAccessException
 	{
 		for (Map.Entry<String, String> plugin : c.entrySet())
@@ -119,5 +114,5 @@ public class Bot
 			p.register(name, object);
 		}
 	}
-
+        
 }
