@@ -10,6 +10,11 @@
     ],
     "commands": {
         "rand": "uk.co.unitycoders.pircbotx.commands.RandCommand",
-        "lart": "uk.co.unitycoders.pircbotx.commands.LartCommand"
+	"lart": "uk.co.unitycoders.pircbotx.commands.LartCommand",
+	"karma": "uk.co.unitycoders.pircbotx.commands.KarmaCommand",
+	"calc": "uk.co.unitycoders.pircbotx.commands.CalcCommand",
+	"joins": "uk.co.unitycoders.pircbotx.commands.JoinsCommand",
+	"killertrout": "uk.co.unitycoders.pircbotx.commands.KillerTroutCommand",
+	"nick": "uk.co.unitycoders.pircbotx.commands.NickCommand" 
     }
 }

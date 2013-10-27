@@ -50,25 +50,18 @@ public class Bot {
         ProfileManager profiles = new ProfileManager(DBConnection.getProfileModel());
         DateTimeCommand dtCmd = new DateTimeCommand();
 
-        		// Dynamiclly load classes from configuration file (if available)
-		if (config.commands != null)
-		{
-			loadCommands(config.commands, processor);
-		}
+        // Dynamiclly load classes from configuration file (if available)
+	if (config.commands != null)
+	{
+		loadCommands(config.commands, processor);
+	}
         
         // Commands
-        processor.register("rand", new RandCommand());
         processor.register("time", dtCmd);
         processor.register("date", dtCmd);
         processor.register("datetime", dtCmd);
-        processor.register("lart", new LartCommand());
-        processor.register("killertrout", new KillerTroutCommand());
-        processor.register("joins", new JoinsCommand());
-        processor.register("calc", new CalcCommand());
-        processor.register("karma", new KarmaCommand());
         processor.register("profile", new ProfileCommand(profiles));
         processor.register("help", new HelpCommand(processor));
-        processor.register("nick", new NickCommand());
 
         PircBotX bot = new PircBotX();
         ListenerManager<? extends PircBotX> manager = bot.getListenerManager();
