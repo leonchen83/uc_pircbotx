@@ -18,6 +18,9 @@
  */
 package uk.co.unitycoders.pircbotx;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 /**
  *
  * @author joseph
@@ -30,4 +33,9 @@ public class Configuration {
     public Boolean ssl;
     public String[] channels;
     public char trigger;
+    public Map<String, String> commands;
+
+    public Configuration() {
+        this.commands = new TreeMap<String, String>();
+    }
 }

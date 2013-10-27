@@ -7,5 +7,9 @@
     "channels": [
         "#unity-coders",
         "#unity-coders-bots"
-    ]
+    ],
+    "commands": {
+        "rand": "uk.co.unitycoders.pircbotx.commands.RandCommand",
+        "lart": "uk.co.unitycoders.pircbotx.commands.LartCommand"
+    }
 }
