@@ -27,16 +27,7 @@ import org.pircbotx.PircBotX;
 
 import uk.co.unitycoders.pircbotx.commandprocessor.CommandListener;
 import uk.co.unitycoders.pircbotx.commandprocessor.CommandProcessor;
-import uk.co.unitycoders.pircbotx.commands.CalcCommand;
-import uk.co.unitycoders.pircbotx.commands.DateTimeCommand;
-import uk.co.unitycoders.pircbotx.commands.FactoidCommand;
-import uk.co.unitycoders.pircbotx.commands.HelpCommand;
-import uk.co.unitycoders.pircbotx.commands.JoinsCommand;
-import uk.co.unitycoders.pircbotx.commands.KarmaCommand;
-import uk.co.unitycoders.pircbotx.commands.KillerTroutCommand;
-import uk.co.unitycoders.pircbotx.commands.LartCommand;
-import uk.co.unitycoders.pircbotx.commands.NickCommand;
-import uk.co.unitycoders.pircbotx.commands.RandCommand;
+import uk.co.unitycoders.pircbotx.commands.*;
 import uk.co.unitycoders.pircbotx.data.db.DBConnection;
 import uk.co.unitycoders.pircbotx.listeners.JoinsListener;
 import uk.co.unitycoders.pircbotx.listeners.LinesListener;
@@ -73,6 +64,7 @@ public class Bot {
         processor.register("help", new HelpCommand(processor));
         processor.register("nick", new NickCommand());
         processor.register("factoid", new FactoidCommand(DBConnection.getFactoidModel()));
+        processor.register("github", new GithubCommand());
 
         // Configure bot
         Builder<PircBotX> cb = new Configuration.Builder<PircBotX>()
