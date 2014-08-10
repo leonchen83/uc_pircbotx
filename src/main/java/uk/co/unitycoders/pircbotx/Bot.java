@@ -1,5 +1,5 @@
 /**
- * Copyright © 2012-2013 Bruce Cowan <bruce@bcowan.me.uk>
+ * Copyright © 2012-2014 Bruce Cowan <bruce@bcowan.me.uk>
  * Copyright © 2012-2013 Joseph Walton-Rivers <webpigeon@unitycoders.co.uk>
  *
  * This file is part of uc_PircBotX.
@@ -22,12 +22,22 @@ package uk.co.unitycoders.pircbotx;
 import java.util.Map;
 import javax.net.ssl.SSLSocketFactory;
 
+import org.pircbotx.Configuration;
+import org.pircbotx.Configuration.Builder;
 import org.pircbotx.PircBotX;
-import org.pircbotx.hooks.managers.ListenerManager;
 
 import uk.co.unitycoders.pircbotx.commandprocessor.CommandListener;
 import uk.co.unitycoders.pircbotx.commandprocessor.CommandProcessor;
-import uk.co.unitycoders.pircbotx.commands.*;
+import uk.co.unitycoders.pircbotx.commands.CalcCommand;
+import uk.co.unitycoders.pircbotx.commands.DateTimeCommand;
+import uk.co.unitycoders.pircbotx.commands.FactoidCommand;
+import uk.co.unitycoders.pircbotx.commands.HelpCommand;
+import uk.co.unitycoders.pircbotx.commands.JoinsCommand;
+import uk.co.unitycoders.pircbotx.commands.KarmaCommand;
+import uk.co.unitycoders.pircbotx.commands.KillerTroutCommand;
+import uk.co.unitycoders.pircbotx.commands.LartCommand;
+import uk.co.unitycoders.pircbotx.commands.NickCommand;
+import uk.co.unitycoders.pircbotx.commands.RandCommand;
 import uk.co.unitycoders.pircbotx.data.db.DBConnection;
 import uk.co.unitycoders.pircbotx.listeners.JoinsListener;
 import uk.co.unitycoders.pircbotx.listeners.LinesListener;
@@ -43,18 +53,18 @@ public class Bot {
 
     public static void main(String[] args) throws Exception {
         // Bot Configuration
-        Configuration config = ConfigurationManager.loadConfig();
+        LocalConfiguration localConfig = ConfigurationManager.loadConfig();
 
-        CommandProcessor processor = new CommandProcessor(config.trigger);
+        CommandProcessor processor = new CommandProcessor(localConfig.trigger);
 
         ProfileManager profiles = new ProfileManager(DBConnection.getProfileModel());
         DateTimeCommand dtCmd = new DateTimeCommand();
 
         // Dynamiclly load classes from configuration file (if available)
-	if (config.commands != null)
-	{
-		loadCommands(config.commands, processor);
-	}
+	    if (localConfig.commands != null)
+	    {
+		    loadCommands(localConfig.commands, processor);
+	    }
         
         // Commands
         processor.register("time", dtCmd);
@@ -62,31 +72,34 @@ public class Bot {
         processor.register("datetime", dtCmd);
         processor.register("profile", new ProfileCommand(profiles));
         processor.register("help", new HelpCommand(processor));
+        processor.register("nick", new NickCommand());
+        processor.register("factoid", new FactoidCommand(DBConnection.getFactoidModel()));
+        
+        // Configure bot
+        Builder<PircBotX> cb = new Configuration.Builder<PircBotX>()
+            .setName(localConfig.nick)
+            .setAutoNickChange(true)
+            .setAutoReconnect(true)
+            .setServer(localConfig.host, localConfig.port)
+            .addAutoJoinChannel("unity-coders")
+            .addListener(new CommandListener(processor))
+            .addListener(new LinesListener())
+            .addListener(JoinsListener.getInstance());
 
-        PircBotX bot = new PircBotX();
-        ListenerManager<? extends PircBotX> manager = bot.getListenerManager();
+        // Configure SSL
+        if (localConfig.ssl)
+            cb.setSocketFactory(SSLSocketFactory.getDefault());
 
-        // Listeners
-        manager.addListener(new CommandListener(processor));
-        manager.addListener(new LinesListener());
-        manager.addListener(JoinsListener.getInstance());
-
-        // Snapshot (1.8-SNAPSHOT) only
-        bot.setAutoReconnect(true);
-        bot.setAutoReconnectChannels(true);
+        // Add channels to join
+        for (String channel : localConfig.channels)
+        {
+            cb.addAutoJoinChannel(channel);
+        }
+        Configuration<PircBotX> configuration = cb.buildConfiguration();
+        PircBotX bot = new PircBotX(configuration);
 
         try {
-            bot.setName(config.nick);
-            if (config.ssl) {
-                bot.connect(config.host, config.port, SSLSocketFactory.getDefault());
-            } else {
-                bot.connect(config.host, config.port);
-            }
-
-            for (String channel : config.channels) {
-                bot.joinChannel(channel);
-            }
-            bot.setVerbose(true);
+            bot.startBot();
         } catch (Exception e) {
             e.printStackTrace();
         }

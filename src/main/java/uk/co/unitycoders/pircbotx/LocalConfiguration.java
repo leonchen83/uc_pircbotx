@@ -25,7 +25,7 @@ import java.util.TreeMap;
  *
  * @author joseph
  */
-public class Configuration {
+public class LocalConfiguration {
 
     public String nick;
     public String host;

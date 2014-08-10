@@ -20,9 +20,7 @@ package uk.co.unitycoders.pircbotx.commands;
 
 import java.util.Map;
 
-import org.pircbotx.PircBotX;
 import org.pircbotx.User;
-import org.pircbotx.hooks.events.MessageEvent;
 
 import uk.co.unitycoders.pircbotx.commandprocessor.Command;
 import uk.co.unitycoders.pircbotx.commandprocessor.Message;
@@ -54,10 +52,9 @@ public class JoinsCommand {
             builder.append(nick);
             builder.append(" = ");
             builder.append(value);
-            builder.append(";");
+            builder.append("; ");
         }
 
-        builder.deleteCharAt(builder.length() - 1);
-        event.respond(builder.toString());
+        event.respond(builder.substring(0, builder.length() - 2));
     }
 }

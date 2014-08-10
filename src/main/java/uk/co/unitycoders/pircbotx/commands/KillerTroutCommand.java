@@ -18,9 +18,6 @@
  */
 package uk.co.unitycoders.pircbotx.commands;
 
-import org.pircbotx.PircBotX;
-import org.pircbotx.hooks.events.MessageEvent;
-
 import uk.co.unitycoders.pircbotx.commandprocessor.Command;
 import uk.co.unitycoders.pircbotx.commandprocessor.Message;
 
@@ -33,7 +30,6 @@ public class KillerTroutCommand {
 
     @Command
     public void onTrout(Message event) throws Exception {
-        event.sendAction("has been killed by a trout");
-        event.getBot().shutdown();
+        event.sendAction("would have been killed by a trout");
     }
 }

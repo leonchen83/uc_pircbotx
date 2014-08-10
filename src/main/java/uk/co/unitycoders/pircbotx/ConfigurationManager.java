@@ -19,10 +19,11 @@
  */
 package uk.co.unitycoders.pircbotx;
 
-import com.google.gson.Gson;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+
+import com.google.gson.Gson;
 
 /**
  * Static Utility class to deal with configuration files.
@@ -45,9 +46,9 @@ public class ConfigurationManager {
         return new FileReader(file);
     }
 
-    public static Configuration loadConfig() throws IOException {
+    public static LocalConfiguration loadConfig() throws IOException {
         Gson gson = new Gson();
-        return gson.fromJson(getFileReader(JSON_FILE_NAME), Configuration.class);
+        return gson.fromJson(getFileReader(JSON_FILE_NAME), LocalConfiguration.class);
     }
 
 }
