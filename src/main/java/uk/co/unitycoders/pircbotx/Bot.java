@@ -19,21 +19,6 @@
  */
 package uk.co.unitycoders.pircbotx;
 
-import javax.net.ssl.SSLSocketFactory;
-
-import org.pircbotx.Configuration;
-import org.pircbotx.Configuration.Builder;
-import org.pircbotx.PircBotX;
-
-import uk.co.unitycoders.pircbotx.commandprocessor.CommandListener;
-import uk.co.unitycoders.pircbotx.commandprocessor.CommandProcessor;
-import uk.co.unitycoders.pircbotx.commands.*;
-import uk.co.unitycoders.pircbotx.data.db.DBConnection;
-import uk.co.unitycoders.pircbotx.listeners.JoinsListener;
-import uk.co.unitycoders.pircbotx.listeners.LinesListener;
-import uk.co.unitycoders.pircbotx.profile.ProfileCommand;
-import uk.co.unitycoders.pircbotx.profile.ProfileManager;
-
 /**
  * The actual bot itself.
  *
@@ -42,57 +27,15 @@ import uk.co.unitycoders.pircbotx.profile.ProfileManager;
 public class Bot {
 
     public static void main(String[] args) throws Exception {
-        // Bot Configuration
-        LocalConfiguration localConfig = ConfigurationManager.loadConfig();
-
-        CommandProcessor processor = new CommandProcessor(localConfig.trigger);
-
-        ProfileManager profiles = new ProfileManager(DBConnection.getProfileModel());
-        DateTimeCommand dtCmd = new DateTimeCommand();
-
-        // Commands
-        processor.register("rand", new RandCommand());
-        processor.register("time", dtCmd);
-        processor.register("date", dtCmd);
-        processor.register("datetime", dtCmd);
-        processor.register("lart", new LartCommand());
-        processor.register("killertrout", new KillerTroutCommand());
-        processor.register("joins", new JoinsCommand());
-        processor.register("calc", new CalcCommand());
-        processor.register("karma", new KarmaCommand());
-        processor.register("profile", new ProfileCommand(profiles));
-        processor.register("help", new HelpCommand(processor));
-        processor.register("nick", new NickCommand());
-        processor.register("factoid", new FactoidCommand(DBConnection.getFactoidModel()));
-        processor.register("github", new GithubCommand());
-
-        // Configure bot
-        Builder<PircBotX> cb = new Configuration.Builder<PircBotX>()
-            .setName(localConfig.nick)
-            .setAutoNickChange(true)
-            .setAutoReconnect(true)
-            .setServer(localConfig.host, localConfig.port)
-            .addAutoJoinChannel("unity-coders")
-            .addListener(new CommandListener(processor))
-            .addListener(new LinesListener())
-            .addListener(JoinsListener.getInstance());
-
-        // Configure SSL
-        if (localConfig.ssl)
-            cb.setSocketFactory(SSLSocketFactory.getDefault());
-
-        // Add channels to join
-        for (String channel : localConfig.channels)
-        {
-            cb.addAutoJoinChannel(channel);
+        String configPath = ConfigurationManager.JSON_FILE_NAME;
+        if (args.length > 1) {
+            configPath = args[1];
         }
-        Configuration<PircBotX> configuration = cb.buildConfiguration();
-        PircBotX bot = new PircBotX(configuration);
 
-        try {
-            bot.startBot();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        BotRunnable runnable = new BotRunnable(ConfigurationManager.loadConfig(configPath));
+        Thread botThread = new Thread(runnable);
+
+        botThread.start();
+        botThread.join();
     }
 }
