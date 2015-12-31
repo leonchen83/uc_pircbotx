@@ -24,6 +24,14 @@ Warning: This is **very** experimental. It /should/ work on debian based distrib
     $ vim /etc/uc_pircbotx.json # edit to suit your needs
     $ sudo ucbot-ctl
 
+### Running as a docker container
+This is still experimental - I need to find a clean way of doing configuration files (and allow loading of Jars from a volume ;P)
+
+   $ mvn package
+   $ vim src/main/resources/uc_pircbotx.json.example # Edit the configuration file to match your needs
+   $ sudo docker build -t unitycoders/ircbot:0.3
+   $ sudo docker run -it unitycoders/ircbot:0.3 # add -d to run in background
+
 ### Maven With IDEs
 #### Maven With Eclipse
 The maven website has tutorials on using maven with eclipse. You can see them at http://maven.apache.org/guides/mini/guide-ide-eclipse.html.
